@@ -151,17 +151,17 @@ Ein **Snapshot** hält den Zustand einer VM zu einem Zeitpunkt fest. Die Image-D
    ```bash
    wget -O vm-lab.tar.gz https://github.com/rechert-hsk/vm-lab/archive/refs/heads/main.tar.gz
    tar xzf vm-lab.tar.gz && cd vm-lab-main/code/performance
-   cat rechnen.py systemaufrufe.py schreiben.py
+   cat rechnen.py lesen.py schreiben.py
    ```
 
 > **Aufgabe 1:** Welcher der Werte `real`, `user` und `sys` ist bei jedem Programm der größte?
 
-2. Gast: `time python3 rechnen.py`, ebenso `systemaufrufe.py` und `schreiben.py`; jedes Programm dreimal, den mittleren Wert eintragen.
+2. Gast: `time python3 rechnen.py`, ebenso `lesen.py` und `schreiben.py`; jedes Programm dreimal, den mittleren Wert eintragen.
 
 | Programm | real | user | sys |
 |---|---|---|---|
 | `rechnen.py` | | | |
-| `systemaufrufe.py` | | | |
+| `lesen.py` | | | |
 | `schreiben.py` | | | |
 
 > **Ergebnis 1:** Bei welchem Programm arbeitet der Gast nur im User Mode, bei welchem arbeitet der Gastkernel, und bei welchem ist der Hypervisor beteiligt? Welche Anwendungen der Stadtverwaltung bremst die Virtualisierung am stärksten?
