@@ -5,7 +5,7 @@
 ## Inhalt
 
 - `handouts/` – Handouts für Studierende
-  - `vm-uebung-aufgaben.md` – Aufgaben für beide Programme: Pflichtteil und Themen A bis E
+  - `vm-uebung-aufgaben.md` – Aufgaben für UTM und VirtualBox
   - `vm-handout-utm.md` – Einrichtung der VM mit UTM
   - `vm-handout-vbox.md` – Einrichtung der VM mit VirtualBox
 - `code/performance/` – Programme für die Performance-Messung im Gast, Aufruf mit `time`

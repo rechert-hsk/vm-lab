@@ -1,67 +1,53 @@
 # Debian-VM mit VirtualBox einrichten
-IT-Systeme · Einheit 2 · Einrichtung für Windows und macOS · Stand 17.10.2026
+IT-Systeme · Einheit 2 · Einrichtung für Windows und macOS
 
-Sie richten eine Debian-VM ein. Mit ihr bearbeiten Sie anschließend die Aufgaben aus dem Handout „Virtuelle Maschinen in der Praxis“. Arbeiten Sie zu zweit oder zu dritt an einem Rechner. **Ist Debian mit Xfce bereits einsatzbereit, beginnen Sie mit der Startkontrolle.**
+Voraussetzung: Rechner mit mindestens 8 GB RAM, 25 GB freiem Speicher und Internetzugang. Ist Debian bereits installiert, beginnen Sie mit der Startkontrolle.
 
 ## Vorbereitung
 
-1. Laden Sie [VirtualBox](https://www.virtualbox.org/wiki/Downloads) für Ihr Hostbetriebssystem herunter und installieren Sie das Basispaket.
-2. Ermitteln Sie die Prozessorarchitektur. Windows: **Einstellungen → System → Info → Systemtyp**. macOS: **Apple-Menü → Über diesen Mac**.
-3. Laden Sie auf der [Debian-Downloadseite](https://www.debian.org/releases/trixie/debian-installer/) eine **Debian-13-netinst-ISO** herunter:
-
-| Hostprozessor | Passende ISO |
-|---|---|
-| Intel oder AMD, auch Intel-Mac | amd64 |
-| Apple Silicon, z. B. M1/M2/M3/M4 | arm64 |
-| Windows mit ARM-Prozessor | vor der Einrichtung mit der Lehrperson abstimmen |
-
-Der Gruppenrechner braucht für diesen Aufbau **mindestens 8 GB RAM und etwa 25 GB freien Speicher**. Die Installation benötigt Internetzugang. Genügt Ihr Rechner nicht oder dürfen Sie keine Software installieren, schließen Sie sich einer Gruppe mit geeignetem Rechner an.
+1. [VirtualBox](https://www.virtualbox.org/wiki/Downloads) für Ihr Betriebssystem laden und installieren.
+2. Prozessor ermitteln: Windows **Einstellungen → System → Info → Systemtyp**; macOS **Apple-Menü → Über diesen Mac**.
+3. Von der [Debian-Downloadseite](https://www.debian.org/releases/trixie/debian-installer/) die **netinst-ISO** laden: **amd64** für Intel und AMD, **arm64** für Apple Silicon. Bei Windows mit ARM-Prozessor vorher die Lehrperson fragen.
 
 ## VM anlegen
 
-1. Öffnen Sie VirtualBox und wählen Sie **Neu**. Name: `IT-Systeme Debian`. Behalten Sie den vorgeschlagenen VM-Ordner, sofern er nicht in einem synchronisierten Cloud-Ordner wie OneDrive oder iCloud liegt.
-2. Wählen Sie die heruntergeladene ISO. Betriebssystem: **Linux / Debian**, passend zur Architektur. Schalten Sie **Unbeaufsichtigte Installation** aus bzw. aktivieren Sie **Skip Unattended Installation**.
-3. Stellen Sie **2048 MB RAM**, **2 Prozessoren** und eine neue **dynamisch belegte VDI-Festplatte mit 20 GB** ein. Lassen Sie die übrigen vorgeschlagenen Hardwarewerte stehen.
-4. Prüfen Sie unter **Ändern → Netzwerk → Adapter 1**: Adapter aktiviert, **NAT**, **Kabel verbunden**. Speichern Sie die Einstellungen und starten Sie die VM.
-
-<!-- seitenumbruch -->
+1. VirtualBox: **Neu**, Name `IT-Systeme Debian`. Der VM-Ordner liegt nicht in OneDrive oder iCloud.
+2. ISO auswählen, Typ **Linux / Debian**. **Unbeaufsichtigte Installation** ausschalten.
+3. **2048 MB** Arbeitsspeicher, **2** Prozessoren, neue **dynamisch belegte VDI-Festplatte mit 20 GB**.
+4. **Ändern → Netzwerk → Adapter 1**: aktiviert, **NAT**. VM starten.
 
 ## Debian installieren
 
-1. Wählen Sie im Startmenü der VM **Graphical install**. Im textbasierten Installer wechseln Sie mit Tab zwischen Feldern, markieren mit der Leertaste und bestätigen mit Enter.
-2. Wählen Sie **Deutsch**, Ihren Standort und das passende Tastaturlayout. Lassen Sie das Netzwerk automatisch einrichten. Rechnername: `it-systeme`; Domain: leer.
-3. Lassen Sie das Root-Passwort leer. Der erste Benutzer erhält dann Administratorrechte über `sudo`; die Aufgaben setzen das voraus. Legen Sie den Benutzer `student` an und wählen Sie ein eigenes Übungspasswort.
-4. Wählen Sie **Geführt - vollständige Festplatte verwenden**, die virtuelle Festplatte mit etwa **20 GB** und **Alle Dateien auf eine Partition**. Bestätigen Sie das Schreiben der Änderungen. Werden mehrere Festplatten angeboten, klären Sie die Auswahl vor dem Bestätigen mit der Lehrperson.
-5. Weitere Installationsmedien: **Nein**. Netzwerkspiegel: **Deutschland**, dann `deb.debian.org`. HTTP-Proxy: leer. Die Teilnahme an der Paketverwendungsstatistik können Sie ablehnen.
-6. Markieren Sie bei der Softwareauswahl **Debian-Desktop-Umgebung**, **Xfce** und **Standard-Systemwerkzeuge**. Wählen Sie GNOME und die übrigen Desktop-Umgebungen ab. Warten Sie, bis die Installation abgeschlossen ist.
-7. Fragt der Installer nach dem Bootloader GRUB, installieren Sie ihn auf die virtuelle Festplatte. Beenden Sie die Installation und starten Sie neu. Erscheint erneut das Installationsmenü, werfen Sie die ISO im virtuellen CD/DVD-Laufwerk aus.
-8. Melden Sie sich als `student` an. Erscheint eine Sitzungsauswahl, wählen Sie **Xfce**.
+1. **Graphical install**. Im Installer: Tab wechselt das Feld, Leertaste markiert, Enter bestätigt.
+2. Sprache **Deutsch**, Standort und Tastatur passend. Rechnername `it-systeme`, Domain leer.
+3. Root-Passwort **leer lassen**; dann erhält der erste Benutzer Administratorrechte über `sudo`. Benutzer `student` mit eigenem Passwort anlegen.
+4. **Geführt - vollständige Festplatte verwenden**, die 20-GB-Festplatte, **Alle Dateien auf eine Partition**, Änderungen schreiben.
+5. Weitere Installationsmedien **Nein**, Spiegel **Deutschland → deb.debian.org**, Proxy leer.
+6. Softwareauswahl: **Debian-Desktop-Umgebung**, **Xfce**, **Standard-Systemwerkzeuge**; GNOME abwählen.
+7. GRUB auf die virtuelle Festplatte installieren, neu starten. Erscheint wieder der Installer: ISO im CD/DVD-Laufwerk der VM auswerfen.
+8. Als `student` anmelden, Sitzung **Xfce**.
 
 ## Bedienung
 
-**Host** ist Ihr Laptop mit Windows oder macOS. **Gast** ist Debian im VM-Fenster. Die Einstellungen der VM ändern Sie in VirtualBox auf dem Host, und nur bei vollständig heruntergefahrenem Gast.
+**Host** ist Ihr Laptop, **Gast** ist Debian im VM-Fenster.
 
-| Tätigkeit im Gast | Bedienung |
+| im Gast | Bedienung |
 |---|---|
-| Terminal öffnen | **Anwendungen → Terminal-Emulator** |
-| Programm starten | Menü **Anwendungen**, dort Zubehör, System oder Internet |
-| Datei bearbeiten | **Anwendungen → Zubehör → Mousepad**; Strg+S speichert |
-| Internetseite öffnen | **Anwendungen → Internet → Firefox ESR** |
-| Gast herunterfahren | **Anwendungen → Abmelden → Herunterfahren** |
+| Terminal | Anwendungen → Terminal-Emulator |
+| Texteditor | Anwendungen → Zubehör → Mousepad |
+| Browser | Anwendungen → Internet → Firefox ESR |
+| Herunterfahren | Anwendungen → Abmelden → Herunterfahren |
 
-Im Gast gelten die Tastenkombinationen von Linux: Verwenden Sie auch auf einem Mac **Strg**.
+Im Gast gilt auch auf dem Mac **Strg**.
 
-> **Startkontrolle:** Öffnen Sie im Gast `https://www.debian.org/`. Öffnen Sie das Terminal und führen Sie `sudo true` aus; nach Eingabe Ihres Passworts darf keine Fehlermeldung erscheinen. Fahren Sie Debian herunter und starten Sie die VM erneut. Scheitert ein Schritt, nutzen Sie die Hilfe unten.
+> **Startkontrolle:** Im Gast `https://www.debian.org/` öffnen. Im Terminal `sudo true` ausführen: Nach der Passworteingabe erscheint keine Fehlermeldung. Debian herunterfahren und neu starten.
 
-## Hilfe bei Problemen
+## Hilfe
 
-- **Die VM startet nicht:** Prüfen Sie, ob die ISO zur Architektur passt. Notieren Sie die vollständige Fehlermeldung. Bei Hinweisen auf VT-x, AMD-V oder Hyper-V ziehen Sie die Lehrperson hinzu; ändern Sie BIOS- oder Windows-Sicherheitsoptionen nicht selbst.
-- **Der Installer startet erneut:** Werfen Sie die ISO im virtuellen CD/DVD-Laufwerk aus. Die installierte virtuelle Festplatte bleibt eingebunden.
-- **Maus oder Tastatur bleiben im VM-Fenster gefangen:** Die Taste zur Freigabe steht unten rechts im VM-Fenster; unter Windows ist es meist die rechte Strg-Taste.
-- **`sudo` meldet, `student` sei nicht in der sudoers-Datei:** Bei der Installation wurde ein Root-Passwort gesetzt. Melden Sie sich im Terminal mit `su -` als `root` an, führen Sie `usermod -aG sudo student` aus und melden Sie sich ab und wieder an.
-- **Eine Einstellung ist gesperrt:** Fahren Sie Debian vollständig herunter. Eine pausierte VM oder ein gespeicherter Zustand genügt nicht.
-- **Ein Schritt scheitert weiterhin:** Notieren Sie Schritt, Einstellung und Fehlermeldung und ziehen Sie die Lehrperson hinzu.
+- **VM startet nicht:** Passt die ISO zum Prozessor? Fehlermeldung notieren. Bei Meldungen zu VT-x, AMD-V oder Hyper-V die Lehrperson fragen; BIOS- und Windows-Sicherheitseinstellungen nicht selbst ändern.
+- **Installer startet erneut:** ISO auswerfen.
+- **Maus bleibt im VM-Fenster:** Die Freigabetaste steht unten rechts im VM-Fenster, unter Windows meist die rechte Strg-Taste.
+- **`sudo`: student ist nicht in der sudoers-Datei:** Im Terminal `su -`, Root-Passwort, `usermod -aG sudo student`; ab- und wieder anmelden.
+- **Einstellung gesperrt:** Debian vollständig herunterfahren.
 
-## Dokumentation
-
-[Debian-Installation](https://www.debian.org/releases/trixie/amd64/ch06s03.en.html) · [VirtualBox: VM anlegen](https://docs.oracle.com/en/virtualization/virtualbox/7.2/user/create-vm.html)
+[Debian-Installationsanleitung](https://www.debian.org/releases/trixie/amd64/ch06s03.en.html) · [VirtualBox-Handbuch](https://docs.oracle.com/en/virtualization/virtualbox/7.2/user/)

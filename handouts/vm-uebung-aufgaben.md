@@ -1,527 +1,168 @@
 # Virtuelle Maschinen in der Praxis
-IT-Systeme · Einheit 2 · Aufgaben für UTM und VirtualBox · Stand 17.10.2026
+IT-Systeme · Einheit 2 · Aufgaben für UTM und VirtualBox
 
-Sie untersuchen Ihre Debian-VM im Terminal und mit den Einstellungen des Virtualisierungsprogramms. Alle Gruppen bearbeiten den Pflichtteil; danach bearbeitet jede Gruppe ein Thema aus A bis E und stellt es vor.
+Alle Gruppen bearbeiten Abschnitt 1, danach den Abschnitt, den die Lehrperson ihnen zuweist. Schreiben Sie vor jedem Versuch Ihre Antwort auf die Aufgabe auf und zeigen Sie sie der Lehrperson. Ihre Messtabellen und eine Vorführung an der VM bilden Ihre Präsentation.
 
-Voraussetzung ist eine laufende VM nach dem Einrichtungs-Handout: Debian 13 mit Xfce, Benutzer `student`, 2048 MB RAM, 2 vCPUs, Netzwerk NAT (VirtualBox) bzw. Shared Network (UTM).
+Befehle nach **Gast:** führen Sie im Terminal von Debian aus (**Anwendungen → Terminal-Emulator**), Befehle nach **Host:** auf Ihrem Laptop. Die Bedienung auf dem Host steht in den Tabellen am Ende.
 
-## Arbeitsweise
+- Tab ergänzt Befehle und Dateinamen.
+- Strg+C bricht einen Befehl ab; `q` beendet `top`.
+- Strg+Umschalt+C und Strg+Umschalt+V kopieren und fügen im Terminal ein.
+- `sudo` führt einen Befehl mit Administratorrechten aus und fragt nach Ihrem Passwort; die Eingabe bleibt unsichtbar.
+- `&` am Ende eines Befehls startet ihn im Hintergrund.
 
-Arbeiten Sie zu zweit oder zu dritt und wechseln Sie nach jedem Auftrag die Person an der Tastatur.
+## 1 · vCPU und Arbeitsspeicher
 
-Zu jedem Thema entstehen drei Produkte:
+Die VM hat 2 vCPUs und 2048 MB Arbeitsspeicher.
 
-1. **Vorhersagekarte.** Vor jedem Versuch schreiben Sie Ihre Vorhersage auf und zeigen sie der Lehrperson. Danach wird die Vorhersage nicht mehr geändert.
-2. **Messprotokoll.** Sie tragen jeden Messwert mit Einheit und dem Befehl ein, mit dem Sie ihn ermittelt haben. Ergänzen Sie Screenshots aus Ihrer VM.
-3. **Regel für die Praxis.** Ein Satz, der aus Ihren Messungen folgt.
+> **Aufgabe 1:** Drei Programme rechnen im Gast ohne Pause. Welchen Anteil einer vCPU erhält jedes, und wie viele Kerne des Hosts belegt die VM?
 
-In der Präsentation führen Sie den Effekt an Ihrer VM vor. Danach stellt die Lehrperson eine Frage zu einer veränderten Situation; sie bestimmt, wer aus der Gruppe antwortet.
+1. Gast: `yes > /dev/null &`, dann `top`; Spalte `%CPU` ablesen.
+2. Host: Last des VM-Prozesses ablesen.
+3. Schritte 1 und 2 für das zweite und dritte `yes` wiederholen, danach Gast: `pkill yes`.
 
-Jeder Befehlsblock ist mit **Gast** (Terminal in Debian) oder **Host** (Ihr Laptop) gekennzeichnet. Führen Sie Befehle nur dort aus.
-
-<!-- seitenumbruch -->
-
-## Das Terminal
-
-Sie öffnen das Terminal in Debian über **Anwendungen → Terminal-Emulator**. Die Zeile `student@it-systeme:~$` ist die Eingabeaufforderung: Benutzer, Rechnername und aktueller Ordner; `~` steht für den persönlichen Ordner `/home/student`. Ein Befehl wird mit Enter ausgeführt.
-
-| Befehl | Wirkung |
-|---|---|
-| `pwd` | zeigt den aktuellen Ordner |
-| `ls -l` | listet die Dateien des aktuellen Ordners mit Größe und Datum |
-| `cd ordner` | wechselt in einen Ordner; `cd` ohne Angabe wechselt in den persönlichen Ordner |
-| `cat datei` | gibt den Inhalt einer Textdatei aus |
-| `nano datei` | öffnet eine Datei im Editor; Strg+O speichert, Strg+X beendet |
-| `sudo befehl` | führt einen Befehl mit Administratorrechten aus; fragt nach Ihrem Passwort |
-| `sudo apt install -y paket` | installiert ein Paket aus den Debian-Quellen |
-| `befehl &` | startet einen Befehl im Hintergrund; das Terminal bleibt bedienbar |
-
-- Die Tab-Taste ergänzt angefangene Befehle und Dateinamen.
-- Strg+C bricht den laufenden Befehl ab.
-- Bei der Passworteingabe nach `sudo` erscheinen keine Zeichen.
-- Eine Fehlermeldung nennt meist den Befehl und die Ursache, etwa `nano: command not found` oder `Permission denied`. Lesen Sie sie vollständig, bevor Sie den Befehl wiederholen.
-
-Text kopieren Sie im Terminal mit Strg+Umschalt+C und fügen ihn mit Strg+Umschalt+V ein.
-
-<!-- seitenumbruch -->
-
-## Pflichtteil: Ressourcen einer VM dimensionieren
-
-**Praxisfrage:** Wie viel CPU und Arbeitsspeicher kann ein Host seinen VMs geben?
-
-### Ausgangswerte
-
-**Gast:**
-
-```bash
-lscpu | head -8
-nproc
-free -m
-lsblk
-```
-
-Notieren Sie Architektur, Anzahl der CPUs, Gesamtgröße des Arbeitsspeichers (Spalte `gesamt` bzw. `total`, Zeile `Speicher` bzw. `Mem`) und Größe der Festplatte `sda` bzw. `vda`.
-
-Ermitteln Sie die Zahl der logischen Prozessoren des Hosts:
-
-- **Host macOS:** Terminal öffnen, `sysctl -n hw.ncpu`
-- **Host Windows:** Task-Manager → **Leistung** → **CPU** → Wert **Logische Prozessoren**
-
-### Versuch 1: vCPUs unter Last
-
-> **Vorhersage 1:** Die VM hat 2 vCPUs. Sie starten im Gast drei Programme, die jeweils ununterbrochen rechnen. Wie viel Rechenzeit erhält jedes Programm? Wie viele Kerne des Hosts belegt die VM?
-
-1. Öffnen Sie auf dem Host die Prozessübersicht und sortieren Sie nach CPU-Last:
-   - **macOS:** Aktivitätsanzeige → **CPU**. 100 % entsprechen einem vollständig belegten Kern.
-   - **Windows:** Task-Manager → **Details**. Der Wert bezieht sich auf alle logischen Prozessoren zusammen; belegte Kerne = Wert × logische Prozessoren / 100.
-2. Starten Sie im Gast ein Programm, das ohne Pause rechnet, und beobachten Sie die Last mit `top`. `top` beenden Sie mit `q`.
-
-   **Gast:**
-
-   ```bash
-   yes > /dev/null &
-   top
-   ```
-
-3. Lesen Sie in `top` die Spalte `%CPU` des Prozesses `yes` ab und auf dem Host die Last des Prozesses Ihres Virtualisierungsprogramms.
-4. Wiederholen Sie Schritt 2 und 3 mit dem zweiten und dem dritten `yes`.
-5. Beenden Sie alle Programme `yes`:
-
-   **Gast:**
-
-   ```bash
-   pkill yes
-   ```
-
-| Programme `yes` im Gast | `%CPU` je `yes` im Gast | Last der VM auf dem Host | belegte Kerne des Hosts |
-|---|---|---|---|
-| 1 | | | |
-| 2 | | | |
-| 3 | | | |
-
-### Versuch 2: Arbeitsspeicher zuweisen und belegen
-
-> **Vorhersage 2:** Sie erhöhen den Arbeitsspeicher der VM von 2048 auf 3072 MB. Welchen Wert zeigt `free -m` danach? Ein Programm im Gast belegt 1500 MB und wird beendet. Wie verändert sich der Speicherverbrauch der VM auf dem Host während des Programms und nach seinem Ende?
-
-1. Fahren Sie Debian herunter: **Anwendungen → Abmelden → Herunterfahren**.
-2. Stellen Sie den Arbeitsspeicher auf 3072 MB:
-   - **VirtualBox:** **Ändern** → **System** → **Hauptplatine** → **Hauptspeicher**
-   - **UTM:** VM auswählen → **Bearbeiten** → **System** → **Arbeitsspeicher**
-3. Starten Sie die VM, öffnen Sie das Terminal und führen Sie `free -m` aus.
-4. Lesen Sie auf dem Host den Speicherverbrauch des Prozesses Ihres Virtualisierungsprogramms ab:
-   - **macOS:** Aktivitätsanzeige → **Speicher**
-   - **Windows:** Task-Manager → **Details** → Spalte **Arbeitsspeicher**
-5. Starten Sie im Gast ein Programm, das 1500 MB mit Zufallsdaten füllt und dann wartet:
-
-   **Gast:**
-
-   ```bash
-   python3 -c "import os; x = os.urandom(1500*1024*1024); input('1500 MB belegt. Enter beendet das Programm.')"
-   ```
-
-6. Lesen Sie, solange das Programm wartet, `free -m` in einem zweiten Terminalfenster und den Verbrauch auf dem Host ab.
-7. Beenden Sie das Programm mit Enter. Lesen Sie beide Werte erneut ab.
-
-| Zeitpunkt | `free -m`: Spalte `benutzt`/`used` | Speicherverbrauch der VM auf dem Host |
+| Programme `yes` | `%CPU` je `yes` | Kerne des Hosts |
 |---|---|---|
-| nach dem Start mit 3072 MB | | |
-| Programm wartet | | |
-| nach Programmende | | |
+| 1 | | |
+| 2 | | |
+| 3 | | |
 
-> **Ergebnis Pflichtteil:** Erklären Sie mit Ihren Messwerten, wer die Rechenzeit der vCPUs und den Arbeitsspeicher des Gasts bereitstellt. Formulieren Sie eine Regel, wie viele vCPUs und wie viel Arbeitsspeicher ein Host allen seinen VMs zusammen zuweisen kann, ohne dass eine VM auf Ressourcen wartet.
+> **Aufgabe 2:** Ein Programm im Gast belegt 1500 MB Arbeitsspeicher und endet. Wie ändert sich der Speicherverbrauch der VM auf dem Host?
 
-Lassen Sie 3072 MB eingestellt, wenn Ihr Host mindestens 8 GB RAM hat; sonst stellen Sie 2048 MB wieder ein.
+4. Debian herunterfahren, Arbeitsspeicher auf 3072 MB stellen, VM starten.
+5. Gast: `python3 -c "import os; x = os.urandom(1500*1024*1024); input('Enter beendet')"`
+6. Host: Speicher des VM-Prozesses vor Schritt 5, während das Programm wartet und nach Enter ablesen.
 
-<!-- seitenumbruch -->
+| vor dem Programm | Programm wartet | nach dem Programm |
+|---|---|---|
+| | | |
 
-## Thema A: Speicher und Sicherung
+> **Ergebnis:** Ab welcher Summe der zugewiesenen vCPUs ist ein Host überbucht, und was merkt eine VM davon? Erhält der Host Arbeitsspeicher zurück, den der Gast freigibt?
 
-**Praxisfrage:** Wo liegen die Daten einer VM, wie viel Platz braucht sie, und was muss gesichert werden?
+## 2 · Image-Datei
 
-Die Image-Datei Ihrer VM finden Sie so:
+Die Festplatte des Gasts ist eine Datei im Dateisystem des Hosts.
 
-- **VirtualBox:** **Ändern** → **Massenspeicher** → Festplatte mit der Endung **.vdi** auswählen; der Pfad steht unter **Ort**. Standardordner: `~/VirtualBox VMs/IT-Systeme Debian/` (macOS) bzw. `C:\Users\<Name>\VirtualBox VMs\IT-Systeme Debian\` (Windows).
-- **UTM:** Rechtsklick auf die VM → **Im Finder zeigen**. Rechtsklick auf die `.utm`-Datei → **Paketinhalt zeigen** → Ordner `Data`; die Image-Datei hat die Endung **.qcow2**.
+> **Aufgabe 1:** Der Gast schreibt eine Datei mit 2000 MB und löscht sie wieder. Wie groß ist die Image-Datei nach dem Schreiben und nach dem Löschen?
 
-Die Größe der Image-Datei messen Sie auf dem Host:
+1. Gast: `df -h /`. Host: Größe der Image-Datei.
+2. Gast: `dd if=/dev/urandom of=~/gross.dat bs=1M count=2000 && sync`. Beide Größen messen.
+3. Gast: `rm ~/gross.dat && sync`. Beide Größen messen.
 
-- **macOS** (Terminal; Pfad durch Ziehen der Datei ins Terminalfenster einfügen):
+| | belegt im Gast | Image-Datei |
+|---|---|---|
+| Ausgang | | |
+| nach `dd` | | |
+| nach `rm` | | |
 
-  ```bash
-  du -h <Pfad zur Image-Datei>
-  ```
+> **Aufgabe 2:** Lässt sich eine Datei des Gasts auf dem Host lesen, ohne die VM zu starten?
 
-- **Windows:** Rechtsklick auf die Datei → **Eigenschaften** → **Größe auf Datenträger**
+4. Gast: `echo "MARKE-$RANDOM$RANDOM" | tee ~/marke.txt && sync`. Debian herunterfahren.
+5. Host: Image-Datei nach der ausgegebenen Marke durchsuchen.
 
-### Versuch 1: Gastsicht und Hostsicht
+> **Ergebnis:** Welche Datei muss eine Sicherung der VM enthalten, und wie viel Platz braucht sie? Wer kann die Daten der VM lesen?
 
-> **Vorhersage A1:** Der Gast schreibt eine Datei mit 2000 MB und löscht sie wieder. Wie groß ist die Image-Datei nach dem Schreiben und nach dem Löschen?
+## 3 · Snapshot
 
-1. Messen Sie im Gast Größe und Belegung des Dateisystems und auf dem Host die Größe der Image-Datei.
-
-   **Gast:**
-
-   ```bash
-   lsblk
-   df -h /
-   ```
-
-2. Schreiben Sie im Gast 2000 MB Zufallsdaten in eine Datei. `sync` wartet, bis der Gast die Daten an seine Festplatte übergeben hat.
-
-   **Gast:**
-
-   ```bash
-   dd if=/dev/urandom of=~/gross.dat bs=1M count=2000 status=progress
-   sync
-   ```
-
-3. Messen Sie erneut im Gast (`df -h /`) und auf dem Host.
-4. Löschen Sie die Datei und messen Sie erneut.
-
-   **Gast:**
-
-   ```bash
-   rm ~/gross.dat
-   sync
-   df -h /
-   ```
-
-| Zeitpunkt | Festplatte im Gast (`lsblk`) | belegt im Gast (`df -h /`) | Image-Datei auf dem Host |
-|---|---|---|---|
-| Ausgang | | | |
-| nach dem Schreiben | | | |
-| nach dem Löschen | | | |
-
-### Versuch 2: Gastdaten in der Image-Datei
-
-> **Vorhersage A2:** Sie speichern im Gast eine Textdatei und fahren die VM herunter. Finden Sie den Text auf dem Host, ohne die VM zu starten?
-
-1. Erzeugen Sie im Gast eine Datei mit einer Zeichenkette, die nur Ihre Gruppe kennt, und fahren Sie Debian herunter.
-
-   **Gast:**
-
-   ```bash
-   echo "MARKE-$RANDOM$RANDOM" | tee ~/marke.txt
-   sync
-   ```
-
-   Notieren Sie die ausgegebene Zeichenkette.
-
-2. Durchsuchen Sie auf dem Host die Image-Datei nach der Zeichenkette:
-
-   - **macOS:**
-
-     ```bash
-     LC_ALL=C grep -a -o "MARKE-12345678" <Pfad zur Image-Datei>
-     ```
-
-   - **Windows** (Eingabeaufforderung `cmd`):
-
-     ```
-     findstr /m /c:"MARKE-12345678" "<Pfad zur Image-Datei>"
-     ```
-
-   Ersetzen Sie `MARKE-12345678` durch Ihre Zeichenkette. Die Suche dauert je nach Größe der Image-Datei bis zu einigen Minuten.
-
-> **Ergebnis A:** Erklären Sie mit Ihren Messwerten, wie die Image-Datei wächst und warum sie beim Löschen im Gast nicht kleiner wird. Begründen Sie, welche Datei eine Sicherung der VM enthalten muss, wie viel Platz sie auf dem Sicherungsziel braucht und warum die VM während der Sicherung ausgeschaltet ist. Leiten Sie aus Versuch 2 ab, wer die Daten einer VM lesen kann.
-
-<!-- seitenumbruch -->
-
-## Thema B: Snapshot vor einer riskanten Änderung
-
-Nur mit VirtualBox.
-
-**Praxisfrage:** Wie sichern Sie eine riskante Änderung an einer VM ab, und wovor schützt ein Snapshot nicht?
+Nur VirtualBox.
 
 Ein **Snapshot** hält den Zustand einer VM zu einem Zeitpunkt fest. Die Image-Datei bleibt danach unverändert; alle späteren Änderungen speichert der Hypervisor in einer eigenen Datei.
 
-Ihr VM-Ordner ist `~/VirtualBox VMs/IT-Systeme Debian/` (macOS) bzw. `C:\Users\<Name>\VirtualBox VMs\IT-Systeme Debian\` (Windows). Größen messen Sie wie in Thema A: auf macOS mit `du -h`, auf Windows über **Eigenschaften**.
+> **Aufgabe:** Nach dem Snapshot ändert der Gast eine Datei, entfernt Firefox und schreibt 500 MB. Welche Datei auf dem Host wächst, und was ist nach dem Zurücksetzen auf den Snapshot noch vorhanden?
 
-### Versuch
+1. Gast: `echo "Version 1" > ~/notiz.txt`. Debian herunterfahren. Host: Größe der `.vdi`-Dateien im VM-Ordner und im Unterordner `Snapshots`.
+2. Snapshot `Ausgangszustand` erstellen. Host: wie in Schritt 1.
+3. Gast: `echo "Version 2" > ~/notiz.txt && sudo apt purge -y firefox-esr && dd if=/dev/urandom of=~/gross.dat bs=1M count=500 && sync`. Debian herunterfahren. Host: wie in Schritt 1.
+4. Snapshot wiederherstellen, den aktuellen Zustand dabei nicht sichern. Host: wie in Schritt 1.
+5. Gast: `cat ~/notiz.txt; command -v firefox-esr; ls -l ~/gross.dat`
 
-1. **Ausgangszustand festhalten.** Notieren Sie die Ausgaben.
+| | `.vdi` im VM-Ordner | `.vdi` in `Snapshots` |
+|---|---|---|
+| vor dem Snapshot | | |
+| nach dem Snapshot | | |
+| nach der Änderung | | |
+| nach dem Zurücksetzen | | |
 
-   **Gast:**
+> **Ergebnis:** Welche Datei nimmt die Änderungen auf, und was geschieht beim Zurücksetzen mit ihr? Warum ersetzt ein Snapshot keine Datensicherung?
 
-   ```bash
-   echo "Version 1" > ~/vm-notiz.txt
-   cat ~/vm-notiz.txt
-   ls ~
-   command -v firefox-esr
-   ```
+Löschen Sie den Snapshot nach der Präsentation.
 
-   Fahren Sie Debian herunter. Notieren Sie auf dem Host Größe und Änderungsdatum der `.vdi`-Datei im VM-Ordner und den Inhalt des Unterordners `Snapshots`.
+## 4 · Netzwerkanbindung
 
-2. **Snapshot anlegen.** Wählen Sie im VirtualBox-Hauptfenster die VM, öffnen Sie über das Menüsymbol neben dem VM-Namen die Ansicht **Snapshots** und wählen Sie **Erstellen**. Name: `Ausgangszustand`. Notieren Sie auf dem Host erneut den Inhalt des Ordners `Snapshots` mit Dateinamen und Größen.
+* *NAT* (VirtualBox) bzw. *Shared Network* (UTM): Der Gast erreicht über den Host das Internet.
+* *Host-only:* Gast und Host sind über ein virtuelles Netz verbunden, das nur auf dem Host besteht und keinen Weg ins Internet hat.
+* *Port-Weiterleitung:* Der Hypervisor leitet Verbindungen an einen Port des Hosts an einen Port des Gasts weiter.
 
-> **Vorhersage B:** Sie ändern danach eine Datei, legen eine neue an, entfernen Firefox und schreiben 500 MB. Welche Datei auf dem Host wächst? Was ist nach einem normalen Neustart vorhanden, was nach dem Zurücksetzen auf den Snapshot?
+> **Aufgabe:** Erreicht der Gast das Internet, und erreicht der Host einen Webserver im Gast? Antworten Sie für jede Anbindung der Tabelle.
 
-3. **Ändern.** Starten Sie die VM.
+1. Gast: `sudo apt install -y nginx`
+2. Gast: `ip -br addr` (IPv4-Adresse in der Zeile `enp…`) und `wget -q --spider https://www.debian.org && echo ja || echo nein`
+3. Host: Browser, `http://<IPv4-Adresse des Gasts>`
+4. Debian herunterfahren, Anbindung wechseln, Schritte 2 und 3 wiederholen. Bei Port-Weiterleitung ruft der Host `http://localhost:8080` auf.
+5. Ausgangsanbindung wiederherstellen.
 
-   **Gast:**
-
-   ```bash
-   echo "Version 2" > ~/vm-notiz.txt
-   touch ~/nachher.txt
-   sudo apt purge -y firefox-esr
-   dd if=/dev/urandom of=~/gross.dat bs=1M count=500 status=progress
-   sync
-   ```
-
-4. **Neustart.** Starten Sie Debian über das Menü neu und führen Sie die Befehle aus Schritt 1 ohne die erste Zeile erneut aus. Fahren Sie herunter und messen Sie auf dem Host die `.vdi`-Datei im VM-Ordner und die Datei im Ordner `Snapshots`.
-5. **Zurücksetzen.** Wählen Sie in der Ansicht **Snapshots** den Snapshot `Ausgangszustand` und **Wiederherstellen**. Entfernen Sie im folgenden Dialog das Häkchen bei der Sicherung des aktuellen Zustands. Messen Sie auf dem Host erneut.
-6. **Prüfen.** Starten Sie die VM und führen Sie die Befehle aus Schritt 1 ohne die erste Zeile aus.
-
-| Zeitpunkt | `vm-notiz.txt` | `nachher.txt` | Firefox | `.vdi` im VM-Ordner | Datei in `Snapshots` |
-|---|---|---|---|---|---|
-| vor dem Snapshot | | | | | — |
-| nach dem Snapshot | | | | | |
-| nach Änderung und Neustart | | | | | |
-| nach dem Zurücksetzen | | | | | |
-
-> **Ergebnis B:** Erklären Sie mit Ihren Messwerten, welche Datei die Änderungen nach dem Snapshot aufnimmt und was beim Zurücksetzen mit ihr geschieht. Begründen Sie, warum ein Snapshot keine Datensicherung ersetzt.
-
-Löschen Sie nach der Präsentation den Snapshot über **Snapshots → Löschen**, damit Ihre VM wieder aus einer einzigen Image-Datei besteht.
-
-<!-- seitenumbruch -->
-
-## Thema C: Einen Dienst in der VM bereitstellen
-
-**Praxisfrage:** Wer erreicht einen Webserver in der VM, und wovon hängt das ab?
-
-Die Netzwerkanbindung der VM legt fest, mit welchem Netz die virtuelle Netzwerkkarte des Gasts verbunden ist:
-
-- *NAT* (VirtualBox) bzw. *Shared Network* (UTM): Der Gast erreicht über den Host das Internet; Verbindungen von außen zum Gast stellt das Virtualisierungsprogramm nur nach ausdrücklicher Einrichtung her.
-- *Host-only*: Gast und Host sind über ein virtuelles Netz verbunden, das nur auf dem Host existiert. Es hat keinen Weg ins Internet.
-- *Port-Weiterleitung* (VirtualBox, NAT): Das Virtualisierungsprogramm leitet Verbindungen an einen Port des Hosts an einen Port des Gasts weiter.
-
-### Vorbereitung: Webserver mit eigener Startseite
-
-**Gast:**
-
-```bash
-sudo apt install -y nginx
-systemctl status nginx
-```
-
-`systemctl status` zeigt `active (running)`, wenn der Webserver läuft; beenden Sie die Anzeige mit `q`. Schreiben Sie eine eigene Startseite:
-
-**Gast:**
-
-```bash
-sudo nano /var/www/html/index.html
-```
-
-Inhalt, mit Ihren Namen:
-
-```html
-<h1>Bürgerportal – Gruppe [Namen]</h1>
-```
-
-Öffnen Sie im Gast Firefox mit `http://localhost`. Die Seite muss Ihre Überschrift zeigen.
-
-### Versuch
-
-> **Vorhersage C:** Für jede Netzwerkanbindung: Erreicht der Gast das Internet? Erreicht der Browser des Hosts Ihre Startseite?
-
-Führen Sie in jeder Anbindung dieselben drei Messungen aus:
-
-**Gast:**
-
-```bash
-ip -br addr
-wget -q --spider https://www.debian.org && echo "Internet erreichbar" || echo "Internet nicht erreichbar"
-```
-
-**Host:** Browser öffnen, `http://<IPv4-Adresse des Gasts>` aufrufen. Die IPv4-Adresse steht in der Zeile `enp…` vor dem `/`.
-
-Die Anbindung ändern Sie bei heruntergefahrener VM:
-
-- **VirtualBox:** **Ändern** → **Netzwerk** → **Adapter 1** → **Angeschlossen an**. Für Host-only: Windows **Host-only Adapter**, macOS **Host-Only Network**; ist kein Netz vorhanden, legen Sie es unter **Datei → Werkzeuge → Netzwerkmanager** an.
-- **UTM:** **Bearbeiten** → **Netzwerk** → **Netzwerkmodus**.
-
-Reihenfolge:
-
-1. Ausgangsanbindung (VirtualBox: NAT; UTM: Shared Network)
-2. **Nur VirtualBox:** NAT mit Port-Weiterleitung. **Ändern** → **Netzwerk** → **Adapter 1** → **Erweitert** → **Port-Weiterleitung**, Regel hinzufügen: Protokoll TCP, Host-Port `8080`, Gast-Port `80`, IP-Felder leer. Auf dem Host zusätzlich `http://localhost:8080` aufrufen.
-3. Host-only
-4. Zurück zur Ausgangsanbindung
-
-| Anbindung | IPv4-Adresse des Gasts | Gast → Internet | Host → Startseite (Adresse) |
+| Anbindung | IPv4-Adresse | Gast → Internet | Host → Webserver |
 |---|---|---|---|
 | NAT bzw. Shared Network | | | |
-| NAT mit Port-Weiterleitung (nur VirtualBox) | | | |
+| NAT mit Port-Weiterleitung 8080 → 80 (nur VirtualBox) | | | |
 | Host-only | | | |
 
-> **Ergebnis C:** Erklären Sie mit Ihren Messwerten, in welcher Richtung jede Anbindung Verbindungen zulässt. Begründen Sie, welche Anbindung die Stadtverwaltung für eine VM wählt, deren Webserver nur vom Host aus erreichbar sein soll, und welche für eine VM, die Updates aus dem Internet laden muss.
+> **Ergebnis:** In welche Richtung lässt jede Anbindung Verbindungen zu? Welche Anbindung erhält eine VM, deren Webserver nur der Host erreichen soll und die keinen Internetzugang braucht?
 
-<!-- seitenumbruch -->
-
-## Thema D: Gasterweiterungen und Isolation
+## 5 · Gasterweiterungen und gemeinsamer Ordner
 
 Je eine Gruppe mit VirtualBox und mit UTM.
 
-**Praxisfrage:** Was leisten Gasterweiterungen, und welche Verbindungen zwischen Gast und Host öffnen sie?
+**Gasterweiterungen** sind Treiber und Dienste im Gast, die mit dem Hypervisor zusammenarbeiten. Ein **gemeinsamer Ordner** ist ein Ordner des Hosts, den der Hypervisor dem Gast bereitstellt.
 
-**Gasterweiterungen** sind Treiber und Dienste im Gast, die mit dem Hypervisor zusammenarbeiten. Sie werden im Gast installiert. VirtualBox nennt sie *Guest Additions*; unter UTM übernehmen die Pakete `spice-vdagent` und `qemu-guest-agent` diese Aufgabe.
+> **Aufgabe 1:** Welche Prozesse kommen mit den Gasterweiterungen hinzu, und was ändert sich an der Zwischenablage?
 
-> **Vorhersage D:** Welche Funktionen ändern sich nach der Installation? Kann der Gast nach dem Einrichten eines gemeinsamen Ordners eine Datei auf dem Host löschen?
+1. Zwischenablage auf beidseitig stellen. Gast: `ps -e | grep -i -E "vbox|spice"`. Einen Text auf dem Host kopieren und im Gast in Mousepad einfügen.
+2. Gasterweiterungen installieren:
+   - VirtualBox, Gast: `sudo apt install -y build-essential linux-headers-$(uname -r) bzip2`. Dann **Geräte → Gasterweiterungen einlegen** und Gast: `sudo mount /dev/sr0 /mnt && sudo sh /mnt/VBoxLinuxAdditions.run`; auf Apple Silicon die `.run`-Datei mit `arm64` im Namen (`ls /mnt`).
+   - UTM, Gast: `sudo apt install -y spice-vdagent`
+3. Gast: `sudo reboot`. Schritt 1 wiederholen.
 
-### Schritt 1: Vorher messen
+> **Aufgabe 2:** Kann der Gast eine Datei im gemeinsamen Ordner löschen, und was ändert ein schreibgeschützter Ordner?
 
-1. **Nur VirtualBox:** Stellen Sie bei heruntergefahrener VM **Ändern** → **Allgemein** → **Erweitert** → **Gemeinsame Zwischenablage** auf **bidirektional**. Unter UTM ist die gemeinsame Zwischenablage unter **Bearbeiten** → **Freigabe** voreingestellt.
-2. Starten Sie die VM und führen Sie aus:
-
-   **Gast:**
+4. Host: Ordner `austausch` mit einer Datei `host.txt` anlegen und für die VM freigeben.
+5. Gast: `D=/media/sf_austausch` (VirtualBox) bzw. `D=/media/austausch` (UTM), dann:
 
    ```bash
-   ps -e | grep -i -E "vbox|spice|qemu-ga"
-   xrandr --current | grep "\*"
+   sudo cat $D/host.txt
+   echo "aus dem Gast" | sudo tee $D/gast.txt
+   sudo rm $D/host.txt
    ```
 
-   `ps -e` listet die laufenden Prozesse; `xrandr` zeigt die aktuelle Bildschirmauflösung des Gasts.
+   Host: Ordner `austausch` nach jedem Befehl ansehen.
+6. Debian herunterfahren, Ordner schreibgeschützt freigeben, VM starten, Schritt 5 wiederholen.
 
-3. Vergrößern Sie das VM-Fenster und führen Sie `xrandr --current | grep "\*"` erneut aus.
-4. Kopieren Sie auf dem Host einen Text und versuchen Sie, ihn im Gast in Mousepad (**Anwendungen → Zubehör → Mousepad**) einzufügen.
+| | `cat` | `tee` | `rm` |
+|---|---|---|---|
+| Ordner beschreibbar | | | |
+| Ordner schreibgeschützt | | | |
 
-### Schritt 2: Installieren
+> **Ergebnis:** In welche Richtung fließen Daten über die Zwischenablage und über den gemeinsamen Ordner? Welche Einstellungen erhält eine VM, in der ein Dokument unbekannter Herkunft geöffnet wird?
 
-**VirtualBox, Gast:**
+## 6 · Laufzeit im Gast
 
-```bash
-sudo apt install -y build-essential linux-headers-$(uname -r) bzip2
-```
+`time befehl` misst drei Werte:
 
-Wählen Sie im VM-Fenster **Geräte → Gasterweiterungen einlegen**. Dann:
+* *real:* vergangene Zeit von Start bis Ende
+* *user:* Rechenzeit im User Mode
+* *sys:* Rechenzeit im Kernel Mode, etwa für System Calls
 
-**Gast:**
+1. Gast:
 
-```bash
-sudo mount /dev/sr0 /mnt
-ls /mnt
-```
+   ```bash
+   wget -O vm-lab.tar.gz https://github.com/rechert-hsk/vm-lab/archive/refs/heads/main.tar.gz
+   tar xzf vm-lab.tar.gz && cd vm-lab-main/code/performance
+   cat rechnen.py systemaufrufe.py schreiben.py
+   ```
 
-Führen Sie auf Intel/AMD `sudo sh /mnt/VBoxLinuxAdditions.run` aus, auf Apple Silicon die Datei mit `arm64` im Namen. Der Installer übersetzt Kernelmodule für den laufenden Kernel; das dauert einige Minuten. Starten Sie danach mit `sudo reboot` neu.
+> **Aufgabe 1:** Welcher der Werte `real`, `user` und `sys` ist bei jedem Programm der größte?
 
-**UTM, Gast:**
-
-```bash
-sudo apt install -y spice-vdagent qemu-guest-agent
-sudo reboot
-```
-
-### Schritt 3: Nachher messen
-
-Wiederholen Sie Schritt 1, Punkte 2 bis 4. Führen Sie unter VirtualBox zusätzlich `lsmod | grep vbox` aus; der Befehl listet die geladenen Kernelmodule von VirtualBox.
-
-| Messung | vorher | nachher |
-|---|---|---|
-| Prozesse (`ps -e`) | | |
-| Auflösung, kleines Fenster | | |
-| Auflösung, großes Fenster | | |
-| Text Host → Gast | | |
-
-### Schritt 4: Gemeinsamer Ordner
-
-Legen Sie auf dem Host einen Ordner `vm-austausch` mit einer Textdatei `vom-host.txt` an.
-
-**VirtualBox:** **Geräte → Gemeinsame Ordner → Einstellungen** → Ordner hinzufügen: Pfad zum Ordner `vm-austausch`, Name `austausch`, **Automatisch einbinden** und **Permanent** aktivieren. Der Benutzer `student` braucht die Gruppe `vboxsf`:
-
-**Gast:**
-
-```bash
-sudo usermod -aG vboxsf student
-sudo reboot
-```
-
-Nach dem Neustart liegt der Ordner unter `/media/sf_austausch`.
-
-**UTM:** Bei heruntergefahrener VM **Bearbeiten** → **Freigabe** → **Verzeichnisfreigabe-Modus**: **VirtFS**. Starten Sie die VM, wählen Sie über das Ordnersymbol in der Fensterleiste den Ordner `vm-austausch` und binden Sie ihn ein:
-
-**Gast:**
-
-```bash
-sudo mkdir -p /media/austausch
-sudo mount -t 9p -o trans=virtio,version=9p2000.L share /media/austausch
-```
-
-**Versuch, VirtualBox, Gast:**
-
-```bash
-ls -l /media/sf_austausch
-cat /media/sf_austausch/vom-host.txt
-echo "Im Gast geschrieben" > /media/sf_austausch/vom-gast.txt
-rm /media/sf_austausch/vom-host.txt
-```
-
-**Versuch, UTM, Gast:** Unter UTM schreibt nur `root` in den Ordner; `tee` übernimmt deshalb das Schreiben mit `sudo`.
-
-```bash
-ls -l /media/austausch
-cat /media/austausch/vom-host.txt
-echo "Im Gast geschrieben" | sudo tee /media/austausch/vom-gast.txt
-sudo rm /media/austausch/vom-host.txt
-```
-
-Prüfen Sie nach jedem Befehl den Ordner auf dem Host.
-
-### Schritt 5: Verbindungen schließen
-
-Fahren Sie die VM herunter und ändern Sie:
-
-- **VirtualBox:** **Gemeinsame Zwischenablage** auf **deaktiviert**; beim gemeinsamen Ordner **Nur lesbar** aktivieren.
-- **UTM:** unter **Freigabe** die gemeinsame Zwischenablage abschalten und **Schreibgeschützt** aktivieren.
-
-Starten Sie die VM, binden Sie unter UTM den Ordner erneut ein und wiederholen Sie den Zwischenablage-Test und den Schreibbefehl mit `echo`. Notieren Sie die Fehlermeldung.
-
-> **Ergebnis D:** Erklären Sie mit Ihren Messwerten, welche Funktionen die Gasterweiterungen bereitstellen und welche Komponente im Gast sie umsetzt. Ordnen Sie jeder Funktion zu, in welche Richtung Daten zwischen Gast und Host fließen und wie die Verbindung geschlossen wird. Begründen Sie, welche Einstellungen eine VM erhält, in der ein Dokument unbekannter Herkunft geöffnet werden soll.
-
-<!-- seitenumbruch -->
-
-## Thema E: Performance
-
-**Praxisfrage:** Welche Arbeitslasten laufen in einer VM so schnell wie auf dem Host, und welche nicht?
-
-`time` misst die Laufzeit eines Programms in drei Werten:
-
-- *real:* vergangene Zeit von Start bis Ende
-- *user:* Rechenzeit der CPU im User Mode
-- *sys:* Rechenzeit der CPU im Kernel Mode, etwa für System Calls
-
-### Programme holen
-
-**Gast:**
-
-```bash
-cd ~
-wget -O vm-lab.tar.gz https://github.com/rechert-hsk/vm-lab/archive/refs/heads/main.tar.gz
-tar xzf vm-lab.tar.gz
-cd vm-lab-main/code/performance
-ls
-python3 --version
-```
-
-Lesen Sie jedes Programm mit `cat` und beschreiben Sie in einem Satz, was es tut:
-
-| Programm | Was es tut |
-|---|---|
-| `rechnen.py` | |
-| `systemaufrufe.py` | |
-| `schreiben.py` | |
-
-> **Vorhersage E1:** Welcher der drei Werte `real`, `user`, `sys` ist bei jedem Programm der größte? Bei welchem Programm erwarten Sie, dass `real` deutlich größer ist als `user` + `sys`?
-
-### Versuch 1: Drei Arbeitslasten im Gast
-
-Schließen Sie auf dem Host alle anderen Programme und schließen Sie das Netzteil an. Führen Sie jedes Programm dreimal aus und tragen Sie den mittleren der drei Werte (Median) ein.
-
-**Gast:**
-
-```bash
-time python3 rechnen.py
-time python3 systemaufrufe.py
-time python3 schreiben.py
-```
+2. Gast: `time python3 rechnen.py`, ebenso `systemaufrufe.py` und `schreiben.py`; jedes Programm dreimal, den mittleren Wert eintragen.
 
 | Programm | real | user | sys |
 |---|---|---|---|
@@ -529,83 +170,48 @@ time python3 schreiben.py
 | `systemaufrufe.py` | | | |
 | `schreiben.py` | | | |
 
-### Versuch 2: Vergleich mit dem Host
+> **Ergebnis 1:** Bei welchem Programm arbeitet der Gast nur im User Mode, bei welchem arbeitet der Gastkernel, und bei welchem ist der Hypervisor beteiligt? Welche Anwendungen der Stadtverwaltung bremst die Virtualisierung am stärksten?
 
-Nur, wenn auf dem Host Python 3 installiert ist. Laden Sie die Programme auf dem Host von `https://github.com/rechert-hsk/vm-lab` herunter (**Code → Download ZIP**) und notieren Sie die Python-Version (`python3 --version`).
+**Optional: Emulation.** `qemu-user` führt ein Programm einer fremden ISA aus, indem es dessen Befehle emuliert.
 
-- **macOS, Terminal:** `time python3 rechnen.py`, ebenso `systemaufrufe.py` und `schreiben.py`
-- **Windows, PowerShell:** `Measure-Command { python rechnen.py }`, ebenso `schreiben.py`. `systemaufrufe.py` liest `/dev/zero` und läuft unter Windows nicht.
+> **Aufgabe 2:** Um welchen Faktor ist dieselbe Schleife emuliert langsamer?
 
-| Programm | real im Gast | real auf dem Host | Python-Version Gast / Host |
-|---|---|---|---|
-| `rechnen.py` | | | |
-| `systemaufrufe.py` | | | |
-| `schreiben.py` | | | |
+3. Gast: `bash emulation.sh`. Das Skript zeigt die ISA beider Programme und misst die Schleife nativ und emuliert.
 
-Ein Unterschied der Python-Versionen verändert die Laufzeit unabhängig von der Virtualisierung. Unter `schreiben.py` vergleichen Sie zusätzlich zwei Betriebssysteme, deren `fsync` unterschiedlich arbeitet.
+| | real |
+|---|---|
+| nativ | |
+| emuliert | |
 
-### Versuch 3 (optional): Emulation einer fremden ISA
+> **Ergebnis 2:** Warum läuft `rechnen.py` in der VM ohne Emulation?
 
-`qemu-user` führt ein einzelnes Programm einer anderen ISA aus, indem es dessen Befehle emuliert. Wählen Sie die fremde Architektur nach Ihrem Gast (`uname -m`):
+## Host
 
-| Gast `uname -m` | `FREMD` | `QEMU` |
+| Tätigkeit | macOS | Windows |
 |---|---|---|
-| `aarch64` | `amd64` | `qemu-x86_64` |
-| `x86_64` | `arm64` | `qemu-aarch64` |
+| logische Prozessoren | Terminal: `sysctl -n hw.ncpu` | Task-Manager → Leistung → CPU |
+| Last und Speicher des VM-Prozesses | Aktivitätsanzeige → CPU bzw. Speicher; 100 % = ein Kern | Task-Manager → Details; Kerne = CPU-Wert × logische Prozessoren / 100 |
+| Größe einer Datei | Terminal: `du -h <Datei>` | Rechtsklick → Eigenschaften → Größe auf Datenträger |
+| Text in einer Datei suchen | Terminal: `LC_ALL=C grep -a -o "MARKE-…" <Datei>` | `cmd`: `findstr /m /c:"MARKE-…" "<Datei>"` |
 
-> **Vorhersage E3:** Dieselbe Schleife läuft einmal als Programm für die ISA des Gasts und einmal emuliert. Um welchen Faktor unterscheiden sich die Laufzeiten?
+Einen Dateipfad fügen Sie im Terminal von macOS ein, indem Sie die Datei ins Fenster ziehen.
 
-**Gast** (Werte für `FREMD` und `QEMU` aus der Tabelle):
+## Einstellungen
 
-```bash
-FREMD=amd64
-QEMU=qemu-x86_64
-sudo apt install -y qemu-user busybox-static
-sudo dpkg --add-architecture $FREMD
-sudo apt update
-apt download busybox-static:$FREMD
-dpkg-deb -x busybox-static_*_$FREMD.deb fremd
-file /bin/busybox fremd/bin/busybox
-$QEMU fremd/bin/busybox uname -m
-```
+Einstellungen der VM ändern Sie nur bei heruntergefahrenem Gast.
 
-`file` zeigt die ISA der beiden Programmdateien. Messen Sie dann dreimal je Variante:
+| Einstellung | VirtualBox | UTM |
+|---|---|---|
+| Arbeitsspeicher | Ändern → System → Hauptplatine | Bearbeiten → System |
+| Image-Datei | Ändern → Massenspeicher → `.vdi`-Datei, Feld Ort | Rechtsklick auf die VM → Im Finder zeigen → Paketinhalt zeigen → `Data` → `.qcow2`-Datei |
+| Netzwerkanbindung | Ändern → Netzwerk → Adapter 1 → Angeschlossen an; Host-only fehlt: Datei → Werkzeuge → Netzwerkmanager | Bearbeiten → Netzwerk → Netzwerkmodus |
+| Port-Weiterleitung | Adapter 1 → Erweitert → Port-Weiterleitung: TCP, Host-Port 8080, Gast-Port 80 | — |
+| Snapshot | Menüsymbol neben dem VM-Namen → Snapshots → Erstellen bzw. Wiederherstellen | — |
+| Zwischenablage | Ändern → Allgemein → Erweitert → Gemeinsame Zwischenablage | Bearbeiten → Freigabe |
+| Gemeinsamer Ordner | Geräte → Gemeinsame Ordner: Name `austausch`, Automatisch einbinden; Nur lesbar | Bearbeiten → Freigabe → Verzeichnisfreigabe-Modus VirtFS; Ordner über das Ordnersymbol im VM-Fenster wählen; Schreibgeschützt. Gast: `sudo mkdir -p /media/austausch && sudo mount -t 9p -o trans=virtio,version=9p2000.L share /media/austausch` |
 
-```bash
-SCHLEIFE='i=0; while [ $i -lt 2000000 ]; do i=$((i+1)); done'
-time busybox sh -c "$SCHLEIFE"
-time $QEMU fremd/bin/busybox sh -c "$SCHLEIFE"
-```
+## Hilfe
 
-| Variante | real | user | sys |
-|---|---|---|---|
-| eigene ISA | | | |
-| emuliert | | | |
-
-> **Ergebnis E:** Erklären Sie mit Ihren Messwerten, warum `rechnen.py` im Gast fast so schnell läuft wie auf dem Host. Begründen Sie, bei welchem Programm der Hypervisor beteiligt ist und bei welchem nur der Gastkernel. Leiten Sie ab, welche Anwendungen der Stadtverwaltung in einer VM ohne messbare Einbußen laufen und bei welchen die Leistung vor dem Umzug in eine VM gemessen werden muss.
-
-<!-- seitenumbruch -->
-
-## Präsentation
-
-Jede Gruppe hat 5 Minuten.
-
-1. Praxisfrage
-2. Vorhersage von der Karte
-3. Vorführung des Effekts an Ihrer VM
-4. Messprotokoll mit den entscheidenden Werten
-5. Regel für die Praxis in einem Satz
-
-Danach beantwortet ein von der Lehrperson bestimmtes Gruppenmitglied eine Frage zu einer veränderten Situation.
-
-## Hilfe bei Problemen
-
-- **Eine Einstellung ist gesperrt:** Fahren Sie Debian vollständig herunter. Eine pausierte VM oder ein gespeicherter Zustand genügt nicht.
-- **Ein Befehl hängt:** Brechen Sie ihn mit Strg+C ab.
-- **`sudo` meldet, `student` sei nicht in der sudoers-Datei:** Bei der Installation wurde ein Root-Passwort gesetzt. Melden Sie sich mit `su -` als `root` an und führen Sie `usermod -aG sudo student` aus; danach ab- und wieder anmelden.
-- **`apt` meldet, eine Sperre sei belegt:** Debian installiert im Hintergrund Updates. Warten Sie eine Minute und wiederholen Sie den Befehl.
-- **Die VM startet nach einer Änderung nicht mehr:** Stellen Sie die zuletzt geänderte Einstellung zurück. Notieren Sie Schritt und Fehlermeldung und ziehen Sie die Lehrperson hinzu.
-
-## Dokumentation
-
-[Debian-Referenz](https://www.debian.org/doc/manuals/debian-reference/) · [VirtualBox-Handbuch](https://docs.oracle.com/en/virtualization/virtualbox/7.2/user/) · [UTM-Dokumentation](https://docs.getutm.app/)
+- **Eine Einstellung ist gesperrt:** Debian vollständig herunterfahren; eine pausierte VM genügt nicht.
+- **`apt` meldet eine Sperre:** Debian installiert im Hintergrund Updates. Eine Minute warten, Befehl wiederholen.
+- **Die VM startet nach einer Änderung nicht:** Die zuletzt geänderte Einstellung zurückstellen und die Lehrperson hinzuziehen.
