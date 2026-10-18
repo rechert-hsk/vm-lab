@@ -12,6 +12,4 @@
   - `rechnen.py` – Rechenschleife ohne System Calls
   - `systemaufrufe.py` – viele System Calls ohne Gerätezugriff
   - `schreiben.py` – kleine Schreibzugriffe mit `fsync`
-  - `emulation.sh` – Skizze: dasselbe Programm nativ und als fremde ISA mit `qemu-user`
-
-Stand: in Vorbereitung, im Gast noch nicht getestet.
+  - `emulation.sh` – dasselbe Programm nativ und als fremde ISA mit `qemu-user`

@@ -1,4 +1,4 @@
-# Skizze, im Gast ausführen. FREMD = die jeweils andere Architektur:
+# Im Gast ausführen. FREMD = die jeweils andere Architektur:
 # arm64-Gast (Mac/UTM): FREMD=amd64, QEMU=qemu-x86_64
 # amd64-Gast (Windows/VirtualBox): FREMD=arm64, QEMU=qemu-aarch64
 FREMD=amd64
