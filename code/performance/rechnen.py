@@ -1,4 +1,4 @@
-# Rechnet nur im User Mode: Die Schleife enthält keinen System Call.
+# Rechnet in einer Schleife 50 Millionen Mal mit ganzen Zahlen.
 N = 50_000_000
 
 summe = 0

@@ -1,9 +1,7 @@
 # Virtuelle Maschinen in der Praxis
 IT-Systeme · Einheit 2 · Aufgaben für UTM und VirtualBox
 
-Alle Gruppen bearbeiten Abschnitt 1, danach den Abschnitt, den die Lehrperson ihnen zuweist. Schreiben Sie vor jedem Versuch Ihre Antwort auf die Aufgabe auf und zeigen Sie sie der Lehrperson. Ihre Messtabellen und eine Vorführung an der VM bilden Ihre Präsentation.
-
-Befehle nach **Gast:** führen Sie im Terminal von Debian aus (**Anwendungen → Terminal-Emulator**), Befehle nach **Host:** auf Ihrem Laptop. Die Bedienung auf dem Host steht in den Tabellen am Ende.
+**Gast:** Terminal in Debian (**Anwendungen → Terminal-Emulator**). **Host:** Ihr Laptop.
 
 - Tab ergänzt Befehle und Dateinamen.
 - Strg+C bricht einen Befehl ab; `q` beendet `top`.
@@ -85,8 +83,6 @@ Ein **Snapshot** hält den Zustand einer VM zu einem Zeitpunkt fest. Die Image-D
 
 > **Ergebnis:** Welche Datei nimmt die Änderungen auf, und was geschieht beim Zurücksetzen mit ihr? Warum ersetzt ein Snapshot keine Datensicherung?
 
-Löschen Sie den Snapshot nach der Präsentation.
-
 ## 4 · Netzwerkanbindung
 
 * *NAT* (VirtualBox) bzw. *Shared Network* (UTM): Der Gast erreicht über den Host das Internet.
@@ -110,8 +106,6 @@ Löschen Sie den Snapshot nach der Präsentation.
 > **Ergebnis:** In welche Richtung lässt jede Anbindung Verbindungen zu? Welche Anbindung erhält eine VM, deren Webserver nur der Host erreichen soll und die keinen Internetzugang braucht?
 
 ## 5 · Gasterweiterungen und gemeinsamer Ordner
-
-Je eine Gruppe mit VirtualBox und mit UTM.
 
 **Gasterweiterungen** sind Treiber und Dienste im Gast, die mit dem Hypervisor zusammenarbeiten. Ein **gemeinsamer Ordner** ist ein Ordner des Hosts, den der Hypervisor dem Gast bereitstellt.
 

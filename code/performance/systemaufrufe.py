@@ -1,5 +1,4 @@
-# Führt viele System Calls aus, aber ohne Gerätezugriff:
-# Jedes os.read ist ein read-Aufruf an den Kernel; /dev/zero liefert Nullbytes aus dem Kernel.
+# Liest 5 Millionen Mal ein Byte aus /dev/zero.
 import os
 
 N = 5_000_000
@@ -9,4 +8,4 @@ for _ in range(N):
     os.read(fd, 1)
 os.close(fd)
 
-print("System Calls:", N)
+print("Gelesene Bytes:", N)

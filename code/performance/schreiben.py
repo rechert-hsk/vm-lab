@@ -1,4 +1,4 @@
-# Schreibt kleine Blöcke und erzwingt nach jedem Block mit fsync das Schreiben auf das Gerät.
+# Schreibt 2000 Blöcke zu 4 KiB in eine Datei und ruft nach jedem Block os.fsync auf.
 import os
 
 N = 2_000
