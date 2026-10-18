@@ -1,15 +1,8 @@
 # vm-lab
 
-Übungsmaterial zu virtuellen Maschinen für die Vorlesung IT-Systeme. Die Studierenden installieren Debian 13 mit Xfce in UTM (macOS) oder VirtualBox (Windows, macOS) und untersuchen ihre VM überwiegend im Terminal.
+Handouts und Programme zur Übung „Virtuelle Maschinen in der Praxis“.
 
-## Inhalt
-
-- `handouts/` – Handouts für Studierende
-  - `vm-uebung-aufgaben.md` – Aufgaben für UTM und VirtualBox
-  - `vm-handout-utm.md` – Einrichtung der VM mit UTM
-  - `vm-handout-vbox.md` – Einrichtung der VM mit VirtualBox
-- `code/performance/` – Programme für die Performance-Messung im Gast, Aufruf mit `time`
-  - `rechnen.py` – Rechenschleife ohne System Calls
-  - `systemaufrufe.py` – viele System Calls ohne Gerätezugriff
-  - `schreiben.py` – kleine Schreibzugriffe mit `fsync`
-  - `emulation.sh` – dasselbe Programm nativ und als fremde ISA mit `qemu-user`
+- [Einrichtung mit UTM](handouts/vm-handout-utm.md)
+- [Einrichtung mit VirtualBox](handouts/vm-handout-vbox.md)
+- [Aufgaben](handouts/vm-uebung-aufgaben.md)
+- [Programme zu Abschnitt 6](code/performance/)
