@@ -46,7 +46,7 @@ Im Gast gilt auch auf dem Mac **Strg**.
 
 - **VM startet nicht:** Passt die ISO zum Prozessor? Fehlermeldung notieren. Bei Meldungen zu VT-x, AMD-V oder Hyper-V die Lehrperson fragen; BIOS- und Windows-Sicherheitseinstellungen nicht selbst ändern.
 - **Installer startet erneut:** ISO auswerfen.
-- **Maus bleibt im VM-Fenster:** Die Freigabetaste steht unten rechts im VM-Fenster, unter Windows meist die rechte Strg-Taste.
+- **Maus bleibt im VM-Fenster:** Die Host-Taste steht unten rechts im VM-Fenster; Standard ist unter Windows die rechte Strg-Taste, auf dem Mac die linke Befehlstaste.
 - **`sudo`: student ist nicht in der sudoers-Datei:** Im Terminal `su -`, Root-Passwort, `usermod -aG sudo student`; ab- und wieder anmelden.
 - **Einstellung gesperrt:** Debian vollständig herunterfahren.
 

@@ -1,5 +1,5 @@
 # Im Gast ausführen: bash emulation.sh
-# Führt dieselbe Schleife mit busybox für die ISA des Gasts und emuliert mit busybox für eine fremde ISA aus.
+# Misst dieselbe Schleife mit busybox für die ISA des Gasts und mit busybox für eine fremde ISA unter Emulation.
 set -e
 
 case "$(uname -m)" in

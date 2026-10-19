@@ -13,7 +13,7 @@ IT-Systeme · Einheit 2 · Aufgaben für UTM und VirtualBox
 
 Die VM hat 2 vCPUs und 2048 MB Arbeitsspeicher.
 
-> **Aufgabe 1:** Drei Programme rechnen im Gast ohne Pause. Welchen Anteil einer vCPU erhält jedes, und wie viele Kerne des Hosts belegt die VM?
+> **Aufgabe 1:** Drei Programme belegen im Gast ununterbrochen die CPU. Welchen Anteil einer vCPU erhält jedes, und wie viele Kerne des Hosts belegt die VM?
 
 1. Gast: `yes > /dev/null &`, dann `top`; Spalte `%CPU` ablesen.
 2. Host: Last des VM-Prozesses ablesen.
@@ -39,8 +39,6 @@ Die VM hat 2 vCPUs und 2048 MB Arbeitsspeicher.
 
 ## 2 · Image-Datei
 
-Die Festplatte des Gasts ist eine Datei im Dateisystem des Hosts.
-
 > **Aufgabe 1:** Der Gast schreibt eine Datei mit 2000 MB und löscht sie wieder. Wie groß ist die Image-Datei nach dem Schreiben und nach dem Löschen?
 
 1. Gast: `df -h /`. Host: Größe der Image-Datei.
@@ -64,7 +62,7 @@ Die Festplatte des Gasts ist eine Datei im Dateisystem des Hosts.
 
 Nur VirtualBox.
 
-Ein **Snapshot** hält den Zustand einer VM zu einem Zeitpunkt fest. Die Image-Datei bleibt danach unverändert; alle späteren Änderungen speichert der Hypervisor in einer eigenen Datei.
+Ein **Snapshot** hält den Zustand einer VM zu einem Zeitpunkt fest.
 
 > **Aufgabe:** Nach dem Snapshot ändert der Gast eine Datei, entfernt Firefox und schreibt 500 MB. Welche Datei auf dem Host wächst, und was ist nach dem Zurücksetzen auf den Snapshot noch vorhanden?
 
@@ -207,5 +205,5 @@ Einstellungen der VM ändern Sie nur bei heruntergefahrenem Gast.
 ## Hilfe
 
 - **Eine Einstellung ist gesperrt:** Debian vollständig herunterfahren; eine pausierte VM genügt nicht.
-- **`apt` meldet eine Sperre:** Debian installiert im Hintergrund Updates. Eine Minute warten, Befehl wiederholen.
+- **`apt` meldet eine Sperre:** Ein anderer Prozess verwendet gerade die Paketverwaltung. Eine Minute warten, Befehl wiederholen.
 - **Die VM startet nach einer Änderung nicht:** Die zuletzt geänderte Einstellung zurückstellen und die Lehrperson hinzuziehen.
