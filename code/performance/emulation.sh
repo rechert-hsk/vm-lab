@@ -13,11 +13,11 @@ sudo apt update
 apt download busybox-static:$FREMD
 dpkg-deb -x busybox-static_*_$FREMD.deb fremd
 
-file /bin/busybox fremd/bin/busybox
-$QEMU fremd/bin/busybox uname -m
+file /bin/busybox fremd/usr/bin/busybox
+$QEMU fremd/usr/bin/busybox uname -m
 
-SCHLEIFE='i=0; while [ $i -lt 2000000 ]; do i=$((i+1)); done'
+SCHLEIFE='i=0; while [ $i -lt 1000000 ]; do i=$((i+1)); done'
 echo "nativ:"
 time busybox sh -c "$SCHLEIFE"
 echo "emuliert:"
-time $QEMU fremd/bin/busybox sh -c "$SCHLEIFE"
+time $QEMU fremd/usr/bin/busybox sh -c "$SCHLEIFE"

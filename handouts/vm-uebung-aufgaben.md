@@ -111,14 +111,16 @@ Ein **Snapshot** hält den Zustand einer VM zu einem Zeitpunkt fest.
 
 1. Zwischenablage auf beidseitig stellen. Gast: `ps -e | grep -i -E "vbox|spice"`. Einen Text auf dem Host kopieren und im Gast in Mousepad einfügen.
 2. Gasterweiterungen installieren:
-   - VirtualBox, Gast: `sudo apt install -y build-essential linux-headers-$(uname -r) bzip2`. Dann **Geräte → Gasterweiterungen einlegen** und Gast: `sudo mount /dev/sr0 /mnt && sudo sh /mnt/VBoxLinuxAdditions.run`; auf Apple Silicon die `.run`-Datei mit `arm64` im Namen (`ls /mnt`).
+   - VirtualBox, Gast: `sudo apt update && sudo apt full-upgrade -y && sudo reboot`, nach dem Neustart `sudo apt install -y build-essential linux-headers-$(uname -r) bzip2`. Dann **Geräte → Gasterweiterungen einlegen** und Gast: `sudo mount /dev/sr0 /mnt && sudo sh /mnt/VBoxLinuxAdditions.run`; auf Apple Silicon die `.run`-Datei mit `arm64` im Namen (`ls /mnt`).
    - UTM, Gast: `sudo apt install -y spice-vdagent`
 3. Gast: `sudo reboot`. Schritt 1 wiederholen.
 
 > **Aufgabe 2:** Kann der Gast eine Datei im gemeinsamen Ordner löschen, und was ändert ein schreibgeschützter Ordner?
 
 4. Host: Ordner `austausch` mit einer Datei `host.txt` anlegen und für die VM freigeben.
-5. Gast: `D=/media/sf_austausch` (VirtualBox) bzw. `D=/media/austausch` (UTM), dann:
+5. Nur UTM, Gast: Ordner nach jedem Start einbinden mit `sudo mkdir -p /media/austausch && sudo mount -t 9p -o trans=virtio,version=9p2000.L share /media/austausch`.
+
+   Gast: `D=/media/sf_austausch` (VirtualBox) bzw. `D=/media/austausch` (UTM), dann:
 
    ```bash
    sudo cat $D/host.txt
@@ -182,7 +184,7 @@ Ein **Snapshot** hält den Zustand einer VM zu einem Zeitpunkt fest.
 | Tätigkeit | macOS | Windows |
 |---|---|---|
 | logische Prozessoren | Terminal: `sysctl -n hw.ncpu` | Task-Manager → Leistung → CPU |
-| Last und Speicher des VM-Prozesses | Aktivitätsanzeige → CPU bzw. Speicher; 100 % = ein Kern | Task-Manager → Details; Kerne = CPU-Wert × logische Prozessoren / 100 |
+| Last und Speicher des VM-Prozesses | Aktivitätsanzeige → CPU bzw. Speicher, Prozess `QEMULauncher` (UTM) bzw. `VirtualBoxVM`; 100 % = ein Kern | Task-Manager → Details, Prozess `VirtualBoxVM.exe`; Kerne = CPU-Wert × logische Prozessoren / 100 |
 | Größe einer Datei | Terminal: `du -h <Datei>` | Rechtsklick → Eigenschaften → Größe auf Datenträger |
 | Text in einer Datei suchen | Terminal: `LC_ALL=C grep -a -o "MARKE-…" <Datei>` | `cmd`: `findstr /m /c:"MARKE-…" "<Datei>"` |
 
@@ -200,10 +202,11 @@ Einstellungen der VM ändern Sie nur bei heruntergefahrenem Gast.
 | Port-Weiterleitung | Adapter 1 → Erweitert → Port-Weiterleitung: TCP, Host-Port 8080, Gast-Port 80 | — |
 | Snapshot | Menüsymbol neben dem VM-Namen → Snapshots → Erstellen bzw. Wiederherstellen | — |
 | Zwischenablage | Ändern → Allgemein → Erweitert → Gemeinsame Zwischenablage | Bearbeiten → Freigabe |
-| Gemeinsamer Ordner | Geräte → Gemeinsame Ordner: Name `austausch`, Automatisch einbinden; Nur lesbar | Bearbeiten → Freigabe → Verzeichnisfreigabe-Modus VirtFS; Ordner über das Ordnersymbol im VM-Fenster wählen; Schreibgeschützt. Gast: `sudo mkdir -p /media/austausch && sudo mount -t 9p -o trans=virtio,version=9p2000.L share /media/austausch` |
+| Gemeinsamer Ordner | Geräte → Gemeinsame Ordner: Name `austausch`, Automatisch einbinden; Nur lesbar | Bearbeiten → Freigabe → Verzeichnisfreigabe-Modus VirtFS; Ordner über das Ordnersymbol im VM-Fenster wählen; Schreibgeschützt |
 
 ## Hilfe
 
 - **Eine Einstellung ist gesperrt:** Debian vollständig herunterfahren; eine pausierte VM genügt nicht.
+- **`mount` meldet, dass `/dev/sr0` bereits eingebunden ist:** Debian hat die CD selbst eingebunden. `findmnt /dev/sr0` zeigt den Ort in der Spalte `TARGET`; die `.run`-Datei dort ausführen.
 - **`apt` meldet eine Sperre:** Ein anderer Prozess verwendet gerade die Paketverwaltung. Eine Minute warten, Befehl wiederholen.
 - **Die VM startet nach einer Änderung nicht:** Die zuletzt geänderte Einstellung zurückstellen und die Lehrperson hinzuziehen.

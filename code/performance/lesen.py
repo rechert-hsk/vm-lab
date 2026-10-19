@@ -1,11 +1,12 @@
-# Liest 5 Millionen Mal ein Byte aus /dev/zero.
+# Liest 1 Million Mal 64 KiB aus /dev/zero.
 import os
 
-N = 5_000_000
+N = 1_000_000
+BLOCK = 65536
 
 fd = os.open("/dev/zero", os.O_RDONLY)
 for _ in range(N):
-    os.read(fd, 1)
+    os.read(fd, BLOCK)
 os.close(fd)
 
-print("Gelesene Bytes:", N)
+print("Gelesene Blöcke:", N)
